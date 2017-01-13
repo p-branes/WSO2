@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoint name="alfrescoLogin" xmlns="http://ws.apache.org/ns/synapse">
+    <http method="get" uri-template="http://127.0.0.1:7080/alfresco/s/api/login?u=admin&amp;pw=admin"/>
+</endpoint>

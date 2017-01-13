@@ -1,0 +1,3 @@
+<endpoint xmlns="http://ws.apache.org/ns/synapse" name="bonitaLogin">
+   <http method="GET" uri-template="http://localhost:8080/bonita/loginservice?username=walter.bates&amp;password=bpm&amp;redirect=false"/>
+</endpoint>

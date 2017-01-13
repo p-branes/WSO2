@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="Contrato" groupId="com.chakray.Contrato.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/Contrato.xml</file>
+    </artifact>
+    <artifact name="bonitaGetProcess" groupId="com.chakray.Contrato.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/bonitaGetProcess.xml</file>
+    </artifact>
+    <artifact name="alfrescoUpload" groupId="com.chakray.Contrato.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/alfrescoUpload.xml</file>
+    </artifact>
+    <artifact name="bonitaLogin" groupId="com.chakray.Contrato.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/bonitaLogin.xml</file>
+    </artifact>
+    <artifact name="bonitaStartProcess" groupId="com.chakray.Contrato.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/bonitaStartProcess.xml</file>
+    </artifact>
+    <artifact name="alfrescoLogin" groupId="com.chakray.Contrato.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/alfrescoLogin.xml</file>
+    </artifact>
+    <artifact name="bonitaBusinessObjectName" groupId="com.chakray.Contrato.local-entry" version="1.0.0" type="synapse/local-entry" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/local-entries/bonitaBusinessObjectName.xml</file>
+    </artifact>
+    <artifact name="jsonPayloadField" groupId="com.chakray.Contrato.local-entry" version="1.0.0" type="synapse/local-entry" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/local-entries/jsonPayloadField.xml</file>
+    </artifact>
+    <artifact name="alfrescoContentURL" groupId="com.chakray.Contrato.local-entry" version="1.0.0" type="synapse/local-entry" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/local-entries/alfrescoContentURL.xml</file>
+    </artifact>
+</artifacts>

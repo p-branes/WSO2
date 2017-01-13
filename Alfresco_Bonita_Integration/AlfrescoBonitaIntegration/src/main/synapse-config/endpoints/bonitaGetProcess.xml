@@ -1,0 +1,3 @@
+<endpoint xmlns="http://ws.apache.org/ns/synapse" name="bonitaGetProcess">
+   <http method="GET" uri-template="http://localhost:8080/bonita/API/bpm/process?p=0&amp;c=10&amp;f={uri.var.processFilter}"/>
+</endpoint>

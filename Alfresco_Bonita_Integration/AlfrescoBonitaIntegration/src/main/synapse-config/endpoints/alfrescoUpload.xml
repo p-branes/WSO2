@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<endpoint name="alfrescoUpload" xmlns="http://ws.apache.org/ns/synapse">
+    <http method="post" uri-template="http://127.0.0.1:7080/alfresco/service/api/upload?alf_ticket={uri.var.alfrescoTicket}"/>
+</endpoint>

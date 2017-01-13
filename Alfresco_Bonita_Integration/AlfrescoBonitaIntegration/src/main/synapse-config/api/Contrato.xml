@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/contrato" name="Contrato" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" uri-template="/enviar">
+        <inSequence>
+            <property expression="get-property('bonitaBusinessObjectName')" name="bonitaBusinessObjectName" scope="default" type="STRING"/>
+            <property expression="get-property('jsonPayloadField')" name="jsonPayloadField" scope="default" type="STRING"/>
+            <property expression="get-property('alfrescoContentURL')" name="alfrescoContentURL" scope="default" type="STRING"/>
+            <!-- log entire request -->
+            <log level="full"/>
+            <!-- preserve initial multipart boundary -->
+            <property expression="$trp:content-type" name="initialCT" scope="default" type="STRING"/>
+            <!-- preserve original body -->
+            <enrich>
+                <source clone="true" type="body"/>
+                <target property="REQUEST_PAYLOAD" type="property"/>
+            </enrich>
+            <!-- extract json data from multipart request -->
+            <property expression="fn:substring-before(fn:substring-after(fn:base64Decode(//ns:binary),fn:concat($ctx:jsonPayloadField,'&quot;')),'------')" name="payload" scope="default" type="STRING" xmlns:ns="http://ws.apache.org/commons/ns/payload"/>
+            <!-- load data on body to build internal json -->
+            <payloadFactory media-type="json">
+                <format>
+					{"$1" : [$2]}
+				</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:bonitaBusinessObjectName"/>
+                    <arg evaluator="xml" expression="$ctx:payload"/>
+                </args>
+            </payloadFactory>
+            <!-- preserve json data -->
+            <enrich>
+                <source clone="true" type="body"/>
+                <target property="JSON_PAYLOAD" type="property"/>
+            </enrich>
+            <!-- get ticket from alfresco -->
+            <call>
+                <endpoint key="alfrescoLogin"/>
+            </call>
+            <!--  Abort if not ok -->
+            <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
+                <then/>
+                <else>
+                    <respond/>
+                </else>
+            </filter>
+            <log>
+                <property expression="$axis2:HTTP_SC" name="http"/>
+            </log>
+            <property expression="//ticket" name="uri.var.alfrescoTicket" scope="default" type="STRING"/>
+            <property name="DISABLE_CHUNKING" scope="axis2" type="STRING" value="true"/>
+            <property name="enableMTOM" scope="axis2" type="STRING" value="true"/>
+            <enrich>
+                <source clone="true" property="REQUEST_PAYLOAD" type="property"/>
+                <target type="body"/>
+            </enrich>
+            <property name="messageType" scope="axis2" type="STRING" value="multipart/form-data"/>
+            <!-- set original multipart boundary header -->
+            <property expression="$ctx:initialCT" name="Content-Type" scope="transport" type="STRING"/>
+            <!-- upload to alfresco -->
+            <call>
+                <endpoint key="alfrescoUpload"/>
+            </call>
+            <!--  Abort if not ok -->
+            <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
+                <then/>
+                <else>
+                    <respond/>
+                </else>
+            </filter>
+            <!-- store alfresco response data -->
+            <property expression="//nodeRef" name="uploadedFileNodeRef" scope="default" type="STRING"/>
+            <property expression="//fileName" name="uploadedFileName" scope="default" type="STRING"/>
+            <!-- obtain bonita cookies -->
+            <call>
+                <endpoint key="bonitaLogin"/>
+            </call>
+            <!--  Abort if not ok -->
+            <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
+                <then/>
+                <else>
+                    <respond/>
+                </else>
+            </filter>
+            <!-- avoid bonita problem of using multiple headers with name Set-Cookie -->
+            <class name="com.chakray.SameNameHeaderMediator">
+                <property name="headerName" value="Set-Cookie"/>
+            </class>
+            <!-- set cookies -->
+            <header action="remove" name="Set-Cookie" scope="transport"/>
+            <property expression="$trp:Set-Cookie_0" name="Cookie" scope="default" type="STRING"/>
+            <property expression="fn:substring-before(fn:substring-after($trp:Set-Cookie_1,'='),';')" name="X-Bonita-API-Token" scope="default" type="STRING"/>
+            <header expression="$ctx:Cookie" name="Cookie" scope="transport"/>
+            <!-- get process data -->
+            <property name="uri.var.processFilter" scope="default" type="STRING" value="name=FPS_Contrato"/>
+            <call>
+                <endpoint key="bonitaGetProcess"/>
+            </call>
+            <!--  Abort if not ok -->
+            <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
+                <then/>
+                <else>
+                    <respond/>
+                </else>
+            </filter>
+            <!-- store bonita process response data -->
+            <property expression="//id" name="uri.var.processId" scope="default" type="STRING"/>
+            <!-- set cookies -->
+            <header expression="$ctx:Cookie" name="Cookie" scope="transport"/>
+            <header expression="$ctx:X-Bonita-API-Token" name="X-Bonita-API-Token" scope="transport"/>
+            <!-- replace alfresco nodes of payload with obtained data -->
+            <property expression="fn:concat($ctx:alfrescoContentURL,fn:substring-after($ctx:uploadedFileNodeRef,'/SpacesStore/'),'/',$ctx:uploadedFileName)" name="uploadedFileURL" scope="default" type="STRING"/>
+            <enrich>
+                <source clone="true" property="uploadedFileURL" type="property"/>
+                <target xpath="$ctx:JSON_PAYLOAD/contratoInput/url_alfresco_contrato/text()"/>
+            </enrich>
+            <enrich>
+                <source clone="true" property="uploadedFileNodeRef" type="property"/>
+                <target xpath="$ctx:JSON_PAYLOAD/contratoInput/id_nodo_alfresco_contrato/text()"/>
+            </enrich>
+            <!-- copy json data to body -->
+            <enrich>
+                <source clone="true" property="JSON_PAYLOAD" type="property"/>
+                <target type="body"/>
+            </enrich>
+            <property name="contentType" scope="axis2" type="STRING" value="application/json;charset=UTF-8"/>
+            <property expression="$ctx:processId" name="uri.var.processId" scope="default" type="STRING"/>
+            <call>
+                <endpoint key="bonitaStartProcess"/>
+            </call>
+            <property expression="//caseId" name="caseId" scope="default" type="STRING"/>
+            <enrich>
+                <source clone="true" xpath="//caseId"/>
+                <target action="child" xpath="$ctx:JSON_PAYLOAD/"/>
+            </enrich>
+            <enrich>
+                <source clone="true" property="JSON_PAYLOAD" type="property"/>
+                <target type="body"/>
+            </enrich>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence>
+            <log>
+                <property expression="get-property('ERROR_CODE')" name="property_name"/>
+            </log>
+        </faultSequence>
+    </resource>
+</api>
