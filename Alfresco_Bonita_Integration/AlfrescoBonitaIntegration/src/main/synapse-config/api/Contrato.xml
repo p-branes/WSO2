@@ -19,10 +19,9 @@
             <!-- load data on body to build internal json -->
             <payloadFactory media-type="json">
                 <format>
-					{"$1" : [$2]}
+					$1
 				</format>
                 <args>
-                    <arg evaluator="xml" expression="$ctx:bonitaBusinessObjectName"/>
                     <arg evaluator="xml" expression="$ctx:payload"/>
                 </args>
             </payloadFactory>
@@ -35,7 +34,7 @@
             <call>
                 <endpoint key="alfrescoLogin"/>
             </call>
-            <!--  Abort if not ok -->
+            <!-- Abort if not ok -->
             <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
                 <then/>
                 <else>
@@ -59,7 +58,7 @@
             <call>
                 <endpoint key="alfrescoUpload"/>
             </call>
-            <!--  Abort if not ok -->
+            <!-- Abort if not ok -->
             <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
                 <then/>
                 <else>
@@ -73,7 +72,7 @@
             <call>
                 <endpoint key="bonitaLogin"/>
             </call>
-            <!--  Abort if not ok -->
+            <!-- Abort if not ok -->
             <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
                 <then/>
                 <else>
@@ -94,7 +93,7 @@
             <call>
                 <endpoint key="bonitaGetProcess"/>
             </call>
-            <!--  Abort if not ok -->
+            <!-- Abort if not ok -->
             <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
                 <then/>
                 <else>
@@ -110,11 +109,11 @@
             <property expression="fn:concat($ctx:alfrescoContentURL,fn:substring-after($ctx:uploadedFileNodeRef,'/SpacesStore/'),'/',$ctx:uploadedFileName)" name="uploadedFileURL" scope="default" type="STRING"/>
             <enrich>
                 <source clone="true" property="uploadedFileURL" type="property"/>
-                <target xpath="$ctx:JSON_PAYLOAD/contratoInput/url_alfresco_contrato/text()"/>
+                <target xpath="$ctx:JSON_PAYLOAD/url_alfresco_contrato/text()"/>
             </enrich>
             <enrich>
                 <source clone="true" property="uploadedFileNodeRef" type="property"/>
-                <target xpath="$ctx:JSON_PAYLOAD/contratoInput/id_nodo_alfresco_contrato/text()"/>
+                <target xpath="$ctx:JSON_PAYLOAD/id_nodo_alfresco_contrato/text()"/>
             </enrich>
             <!-- copy json data to body -->
             <enrich>
@@ -126,6 +125,13 @@
             <call>
                 <endpoint key="bonitaStartProcess"/>
             </call>
+            <!-- Abort if not ok -->
+            <filter regex="^200$|^202$" source="$axis2:HTTP_SC">
+                <then/>
+                <else>
+                    <respond/>
+                </else>
+            </filter>
             <property expression="//caseId" name="caseId" scope="default" type="STRING"/>
             <enrich>
                 <source clone="true" xpath="//caseId"/>
@@ -139,9 +145,15 @@
         </inSequence>
         <outSequence/>
         <faultSequence>
-            <log>
-                <property expression="get-property('ERROR_CODE')" name="property_name"/>
+            <log category="ERROR" level="full">
+                <property expression="$ctx:ERROR_MESSAGE" name="ERROR_MESSAGE"/>
+                <property expression="$trp:From" name="FROM"/>
             </log>
+            <makefault version="soap11">
+                <code expression="soap11Env:VersionMismatch" xmlns:soap11Env="http://schemas.xmlsoap.org/soap/envelope/"/>
+                <reason expression="$ctx:ERROR_MESSAGE"/>
+            </makefault>
+            <send/>
         </faultSequence>
     </resource>
 </api>

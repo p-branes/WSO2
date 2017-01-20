@@ -76,7 +76,12 @@
       <version>1.0.0</version>
       <type>xml</type>
     </dependency>
-      </dependencies>
+    <dependency>
+      <groupId>com.chakray.SameNameHeaderMediator</groupId>
+      <artifactId>SameNameHeaderMediator</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  </dependencies>
   <repositories>
     <repository>
       <releases>
