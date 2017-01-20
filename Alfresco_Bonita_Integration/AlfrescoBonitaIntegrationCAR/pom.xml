@@ -24,7 +24,7 @@
   <dependencies>
     <dependency>
       <groupId>com.chakray.Contrato.api</groupId>
-      <artifactId>AlfrescoBonitaIntegration</artifactId>
+      <artifactId>Contrato</artifactId>
       <version>1.0.0</version>
       <type>xml</type>
     </dependency>
@@ -59,9 +59,10 @@
       <type>xml</type>
     </dependency>
     <dependency>
-      <groupId>com.chakray.SameNameHeaderMediator</groupId>
-      <artifactId>SameNameHeaderMediator</artifactId>
+      <groupId>com.chakray.Contrato.local-entry</groupId>
+      <artifactId>alfrescoContentURL</artifactId>
       <version>1.0.0</version>
+      <type>xml</type>
     </dependency>
     <dependency>
       <groupId>com.chakray.Contrato.local-entry</groupId>
@@ -71,17 +72,11 @@
     </dependency>
     <dependency>
       <groupId>com.chakray.Contrato.local-entry</groupId>
-      <artifactId>alfrescoContentURL</artifactId>
-      <version>1.0.0</version>
-      <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>com.chakray.Contrato.local-entry</groupId>
       <artifactId>jsonPayloadField</artifactId>
       <version>1.0.0</version>
       <type>xml</type>
     </dependency>
-  </dependencies>
+      </dependencies>
   <repositories>
     <repository>
       <releases>
