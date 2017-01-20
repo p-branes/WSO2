@@ -1,22 +1,11 @@
-package com.pbranes;
+package com.chakray;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.synapse.MessageContext;
-import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
-import org.apache.synapse.endpoints.HTTPEndpoint;
 import org.apache.synapse.mediators.AbstractMediator;
-import org.apache.synapse.mediators.annotations.ReadAndUpdate;
-import org.apache.synapse.rest.AbstractHandler;
-import org.apache.synapse.rest.RESTConstants;
-import org.apache.synapse.transport.nhttp.NhttpConstants;
 
 public class SameNameHeaderMediator extends AbstractMediator {
 
