@@ -1,3 +1,3 @@
 # WSO2
 
-WSO2 pBranes Commercial projects
+WSO2 p-branes projects
